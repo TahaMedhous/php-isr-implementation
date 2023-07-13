@@ -1,0 +1,58 @@
+body {
+    font-family: "Inter", sans-serif;
+    user-select: none;
+}
+
+@media (max-width: 640px) {
+    .album-details {
+        text-align: center;
+    }
+}
+
+.trackName {
+    max-width: 35rem;
+}
+
+@media screen and (max-width: 768px) {
+    .trackName {
+        max-width: 25rem;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .trackName {
+        max-width: 23rem;
+    }
+}
+
+@media screen and (max-width: 620px) {
+    .trackName {
+        max-width: 19rem;
+    }
+}
+
+@media screen and (max-width: 540px) {
+    .trackName {
+        max-width: 15rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .trackName {
+        max-width: 8rem;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .trackName {
+        max-width: 50px;
+    }
+}
+
+#songN:nth-child(odd) {
+    background-color: #2d2d2d42;
+}
+
+#songN:nth-child(odd):hover {
+    background-color: #0a0a0a;
+}
