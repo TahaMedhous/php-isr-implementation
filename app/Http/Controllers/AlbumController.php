@@ -14,6 +14,11 @@ class AlbumController extends Controller
     public function show(int $id)
     {
         $cacheKey = 'album_' . $id;
+        
+        // if (Cache::has($cacheKey . '_html')) {
+        //     return Cache::get($cacheKey . '_html');
+        // }
+
         $cachedData = Cache::get($cacheKey) ?? [];
         $albumData = $cachedData['data'] ?? null;
         $timestamp = $cachedData['timestamp'] ?? null;
@@ -49,6 +54,14 @@ class AlbumController extends Controller
         }
 
         return view('album', compact('albumData'));
+
+        // instead of caching data then binding it on the fly w the view,
+        // we can generate full html then serve it (needs some tests)
+        // $html = view('album', compact('albumData'))->render();
+        // Cache::put($cacheKey . '_html', $html, self::ALBUM_CACHE_DURATION);
+
+        // return $html;
+
     }
 
     private function fetchAlbumData(int $id)
