@@ -28,6 +28,7 @@ class AlbumController extends Controller
         if ($apiResponse->ok() && $apiResponse->json()['resultCount'] > 0) {
             $apiData = $apiResponse->json();
             $albumData = $apiData['results'][0];
+
             $albumData['songs'] = [];
 
             foreach ($apiData['results'] as $result) {
