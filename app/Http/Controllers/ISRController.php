@@ -17,7 +17,7 @@ class ISRController extends Controller
         if ($pageData === null && $timestamp === null) {
             $pageData = call_user_func($dataCallback, $id);
 
-            if (is_array($pageData) && !empty($pageData)) {
+            if (!empty($pageData)) {
                 $cachedData = ['data' => $pageData, 'timestamp' => $currentTime];
                 Cache::put($cacheKey, $cachedData, $duration);
             } else {
@@ -26,12 +26,12 @@ class ISRController extends Controller
         } elseif ($pageData && ($currentTime - $timestamp) >= $duration) {
             $newPageData = call_user_func($dataCallback, $id);
 
-            if (is_array($newPageData) && empty($newPageData)) {
+            if (empty($newPageData)) {
                 // the page doesn't exist anymore, so we'll delete the cached data
                 Cache::forget($cacheKey);
                 return view('404');
             } elseif (
-                is_array($newPageData) && $this->hasDataChanged($pageData, $newPageData)
+                $this->hasDataChanged($pageData, $newPageData)
             ) {
                 $cachedData = ['data' => $newPageData, 'timestamp' => $currentTime];
                 Cache::put($cacheKey, $cachedData, $duration);
