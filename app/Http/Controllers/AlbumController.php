@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Controllers\ISRController;
 
 class AlbumController extends Controller
 {
@@ -13,55 +14,11 @@ class AlbumController extends Controller
 
     public function show(int $id)
     {
-        $cacheKey = 'album_' . $id;
-        
-        // if (Cache::has($cacheKey . '_html')) {
-        //     return Cache::get($cacheKey . '_html');
-        // }
+        $dataCallback = function ($id) {
+            return $this->fetchAlbumData($id);
+        };
 
-        $cachedData = Cache::get($cacheKey) ?? [];
-        $albumData = $cachedData['data'] ?? null;
-        $timestamp = $cachedData['timestamp'] ?? null;
-        $currentTime = time();
-
-        if ($albumData === null && $timestamp === null) {
-            // album has never been generated before
-            $albumData = $this->fetchAlbumData($id);
-
-            if ($albumData) {
-                $albumData['timesGenerated'] = 0;
-                $cachedData = ['data' => $albumData, 'timestamp' => $currentTime];
-                Cache::put($cacheKey, $cachedData, self::ALBUM_CACHE_DURATION);
-            } else {
-                // Handle error if API request fails, album not found, etc.
-                // throw new \Exception("Failed to fetch album data.");
-
-                return view('404');
-            }
-        } elseif ($albumData && ($currentTime - $timestamp) >= self::ALBUM_CACHE_DURATION) {
-            // album data is stale, so try to fetch new data to see if it has changed
-            $newAlbumData = $this->fetchAlbumData($id);
-
-            if ($newAlbumData && $this->hasAlbumDataChanged($albumData, $newAlbumData)) {
-                // album data has changed, so update the cache
-                $newAlbumData['timesGenerated'] = $albumData['timesGenerated'] + 1;
-                $cachedData = ['data' => $newAlbumData, 'timestamp' => $currentTime];
-                Cache::put($cacheKey, $cachedData, self::ALBUM_CACHE_DURATION);
-                $albumData = $newAlbumData;
-            }
-
-            // album data has not changed, so just update the timestamp to keep it fresh
-        }
-
-        return view('album', compact('albumData'));
-
-        // instead of caching data then binding it on the fly w the view,
-        // we can generate full html then serve it (needs some tests)
-        // $html = view('album', compact('albumData'))->render();
-        // Cache::put($cacheKey . '_html', $html, self::ALBUM_CACHE_DURATION);
-
-        // return $html;
-
+        return (new ISRController)->GetData($id, $dataCallback, self::ALBUM_CACHE_DURATION, 'album', 'albumData');
     }
 
     private function fetchAlbumData(int $id)
@@ -100,14 +57,5 @@ class AlbumController extends Controller
         }
 
         return null;
-    }
-
-    private function hasAlbumDataChanged(array $oldData, array $newData): bool
-    {
-        $serializedOldData = serialize($oldData);
-        $serializedNewData = serialize($newData);
-        // converts the array into a string, so that the comparison is easier and precise
-
-        return $serializedOldData !== $serializedNewData;
     }
 }

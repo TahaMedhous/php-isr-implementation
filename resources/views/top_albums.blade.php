@@ -12,7 +12,7 @@
         @foreach($albums as $album)
         <div class="album flex flex-col items-center justify-center bg-zinc-800 rounded-md p-4">
             <img src="{{ $album['artworkUrl100'] }}" alt="Album Cover" class="rounded-md object-cover border-[1px] border-[#ffffff1c] max-w-fit">
-            <h1 class="text-xl font-bold text-white mt-4">{{ $album['name'] }}</h1>
+            <h1 class="text-xl font-bold text-white mt-4 truncate max-w-full">{{ $album['name'] }}</h1>
             <a class="text-base font-bold inline-block px-4 py-2 bg-neutral-600 text-white rounded-md hover:bg-neutral-500 transition-colors flex items-center cursor-pointer" href="{{ route('album', ['id' => $album['id']]) }}">
                 View Album
             </a>
